@@ -14,18 +14,22 @@ const Details = ({info: {id, name}}) => {
   });
   const [loading, setLoading] = useState(false);
 
-  const getInfo = async() => {
-    
-    setLoading(true);
-    const response = await fetch(`${process.env.REACT_APP_FETCH}${id}.json`);
-    const result = await response.json();
-   
-    setDetails(result);
-    setLoading(false);
-  }
-
   useEffect(()=> {
+    let canceled = false;
+    const getInfo = async() => {
+    
+      setLoading(true);
+      const response = await fetch(`${process.env.REACT_APP_FETCH}${id}.json`);
+      const result = await response.json();
+      
+     if (!canceled) {
+      setDetails(result);
+      setLoading(false);
+     }  
+    }
+
     id && getInfo(id);
+    return () => {canceled = true}
   }, [id])
 
   const loader = <p>Loading {name}...</p>;
